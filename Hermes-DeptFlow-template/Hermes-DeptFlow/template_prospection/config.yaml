@@ -1,0 +1,20 @@
+# Hermes profile configuration for DeptFlow SDR.
+# Keep this file minimal: the SDR runtime reads campaign_config.yaml and icp_config.yaml.
+
+profile:
+  name: template_prospection
+  description: DeptFlow autonomous SDR profile template
+
+runtime:
+  default_script: scripts/daily_prospecting.py
+  dry_run_default: true
+
+limits:
+  daily_search_limit: 100
+  daily_profile_enrichment_limit: 50
+  daily_follow_limit: 0
+  daily_message_limit: 0
+
+plugins:
+  bereach: true
+  supabase: optional

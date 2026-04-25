@@ -1,0 +1,42 @@
+{
+  "campaign": {
+    "name": "default-linkedin-free",
+    "timezone": "Europe/Paris",
+    "run_days": [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday"
+    ]
+  },
+  "qualification": {
+    "threshold": 75,
+    "very_hot_threshold": 88
+  },
+  "limits": {
+    "daily_searches": 100,
+    "daily_profile_enrichments": 50,
+    "daily_follow_profiles": 0,
+    "daily_messages": 0
+  },
+  "outreach": {
+    "prepare_messages": true,
+    "send_messages_automatically": false,
+    "allow_follow_profiles": false,
+    "allow_connection_requests": false,
+    "allow_comments_or_likes": false
+  },
+  "enrichment": {
+    "collect_posts": true,
+    "posts_per_profile": 5,
+    "recent_activity_days": 45
+  },
+  "storage": {
+    "save_rejected_leads": false
+  },
+  "qa": {
+    "enabled": true,
+    "block_on_qa_failure": true
+  }
+}

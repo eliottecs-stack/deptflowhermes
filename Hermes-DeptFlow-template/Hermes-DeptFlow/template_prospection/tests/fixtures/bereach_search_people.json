@@ -1,0 +1,41 @@
+{
+  "success": true,
+  "category": "people",
+  "items": [
+    {
+      "type": "PEOPLE",
+      "name": "Claire Martin",
+      "firstName": "Claire",
+      "lastName": "Martin",
+      "profileUrl": "https://www.linkedin.com/in/claire-martin-demo",
+      "publicIdentifier": "claire-martin-demo",
+      "headline": "CEO chez SaaSFlow — B2B SaaS",
+      "location": "Paris, France",
+      "companyName": "SaaSFlow"
+    },
+    {
+      "type": "PEOPLE",
+      "name": "Paul Durand",
+      "firstName": "Paul",
+      "lastName": "Durand",
+      "profileUrl": "https://www.linkedin.com/in/paul-durand-demo",
+      "publicIdentifier": "paul-durand-demo",
+      "headline": "Student looking for internship",
+      "location": "Lyon, France",
+      "companyName": "University"
+    },
+    {
+      "type": "PEOPLE",
+      "name": "Nadia Bernard",
+      "firstName": "Nadia",
+      "lastName": "Bernard",
+      "profileUrl": "https://www.linkedin.com/in/nadia-bernard-demo",
+      "publicIdentifier": "nadia-bernard-demo",
+      "headline": "Head of Sales B2B Software",
+      "location": "Paris, France",
+      "companyName": "PipelineOps"
+    }
+  ],
+  "creditsUsed": 0,
+  "retryAfter": 0
+}

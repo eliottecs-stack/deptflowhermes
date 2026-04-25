@@ -1,0 +1,87 @@
+{
+  "client": {
+    "name": "Client Demo",
+    "offer_name": "Offre DeptFlow",
+    "offer_description": "Décrire ici l'offre du client en une phrase claire.",
+    "value_proposition": "Aider la cible à obtenir un résultat concret sans complexité.",
+    "proof_points": []
+  },
+  "icp": {
+    "target_roles": [
+      "CEO",
+      "Founder",
+      "Head of Sales",
+      "Sales Director"
+    ],
+    "target_seniority": [
+      "founder",
+      "c-level",
+      "director",
+      "head"
+    ],
+    "target_industries": [
+      "SaaS",
+      "B2B",
+      "Software"
+    ],
+    "target_locations": [
+      "France",
+      "Paris"
+    ],
+    "excluded_roles": [
+      "student",
+      "intern",
+      "recruiter",
+      "job seeker"
+    ],
+    "excluded_industries": [],
+    "excluded_keywords": [
+      "student",
+      "intern",
+      "looking for job",
+      "recruiter",
+      "talent acquisition"
+    ],
+    "competitors": []
+  },
+  "search": {
+    "queries": [
+      "\"CEO\" OR \"Founder\" SaaS France",
+      "\"Head of Sales\" OR \"Sales Director\" B2B France"
+    ],
+    "max_queries_per_run": 3
+  },
+  "buying_signals": {
+    "strong": [
+      "hiring",
+      "recruiting",
+      "growth",
+      "sales process",
+      "outbound",
+      "pipeline",
+      "lead generation"
+    ],
+    "medium": [
+      "launch",
+      "expansion",
+      "fundraising",
+      "new market",
+      "scale"
+    ],
+    "weak": [
+      "sales",
+      "growth",
+      "linkedin",
+      "prospection"
+    ]
+  },
+  "messaging": {
+    "tone": "professionnel, concis, utile",
+    "forbidden_claims": [
+      "ROI garanti",
+      "résultat garanti",
+      "nous avons vu vos données internes"
+    ],
+    "call_to_action": "Est-ce un sujet que vous regardez en ce moment ?"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "claire-martin-demo": {
+    "success": true,
+    "posts": [
+      {
+        "postUrl": "https://www.linkedin.com/posts/claire-demo_activity-1",
+        "text": "Nous recrutons pour accélérer notre growth et structurer notre pipeline outbound.",
+        "date": 1777135934654,
+        "likesCount": 24,
+        "commentsCount": 5,
+        "sharesCount": 1,
+        "type": "activity"
+      }
+    ],
+    "creditsUsed": 0,
+    "retryAfter": 0
+  },
+  "nadia-bernard-demo": {
+    "success": true,
+    "posts": [
+      {
+        "postUrl": "https://www.linkedin.com/posts/nadia-demo_activity-2",
+        "text": "Le sales process B2B devient difficile sans bonne qualification des leads.",
+        "date": 1777135934654,
+        "likesCount": 12,
+        "commentsCount": 2,
+        "sharesCount": 0,
+        "type": "activity"
+      }
+    ],
+    "creditsUsed": 0,
+    "retryAfter": 0
+  }
+}
