@@ -6,6 +6,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs
 
+from deptflow_sdr.control_plane.vault import Vault
 from deptflow_sdr.control_plane.profiles import ProfileFactory, TEMPLATE_VERSION
 from deptflow_sdr.control_plane.registry import Registry
 
@@ -15,9 +16,10 @@ class DashboardApp:
 
     def __init__(self, template_root: Path, state_dir: Path | None = None):
         self.template_root = template_root
-        self.state_dir = state_dir or (template_root / "control_plane")
+        self.state_dir = state_dir or (template_root.parent / ".deptflow-control-plane")
         self.state_dir.mkdir(parents=True, exist_ok=True)
         self.registry = Registry(self.state_dir / "deptflow.db")
+        self.vault = Vault(self.state_dir / "vault.json", passphrase=self._default_passphrase())
         self.profiles_dir = self.state_dir / "profiles"
 
     def render_home(self) -> str:
@@ -59,6 +61,10 @@ class DashboardApp:
               <label>Zones <input name="target_locations" value="France"></label>
               <label>Exclusions <input name="excluded_keywords" placeholder="student, recruiter"></label>
               <label>Quota connexions / jour <input name="daily_connection_limit" type="number" value="20" min="1" max="25"></label>
+              <label>BeReach API key <input name="bereach_api_key" type="password" placeholder="brc_..."></label>
+              <label>OpenAI API key <input name="openai_api_key" type="password" placeholder="sk-..."></label>
+              <label>Google Sheet ID <input name="google_sheet_id" placeholder="sheet id"></label>
+              <label>Google service account JSON <textarea name="google_service_account_json" placeholder='{"type":"service_account",...}'></textarea></label>
               <button class="button" type="submit">Générer le profil Hermes</button>
             </form>
             """,
@@ -90,6 +96,7 @@ class DashboardApp:
         profile_id = self.registry.create_profile(client_id, slug)
         daily_connection_limit = int(fields.get("daily_connection_limit") or 20)
         self.registry.set_profile_limits(profile_id, daily_connection_limit=daily_connection_limit)
+        self._store_secrets(profile_id, fields)
 
         client = {
             "name": client_name,
@@ -171,6 +178,17 @@ class DashboardApp:
     def _split_list(self, value: str) -> list[str]:
         return [item.strip() for item in value.split(",") if item.strip()]
 
+    def _store_secrets(self, profile_id: str, fields: dict[str, str]) -> None:
+        secret_map = {
+            "BEREACH_API_KEY": fields.get("bereach_api_key", "").strip(),
+            "OPENAI_API_KEY": fields.get("openai_api_key", "").strip(),
+            "GOOGLE_SHEET_ID": fields.get("google_sheet_id", "").strip(),
+            "GOOGLE_SERVICE_ACCOUNT_JSON": fields.get("google_service_account_json", "").strip(),
+        }
+        for key, value in secret_map.items():
+            if value:
+                self.vault.set_secret(profile_id, key, value)
+
     def _slug(self, value: str) -> str:
         slug = "".join(ch.lower() if ch.isalnum() else "-" for ch in value)
         return "-".join(part for part in slug.split("-") if part)[:48] or "client"
@@ -203,6 +221,9 @@ class DashboardApp:
             + "".join(rows)
             + "</tbody></table>"
         )
+
+    def _default_passphrase(self) -> str:
+        return "deptflow-local-vault"
 
 
 def make_handler(app: DashboardApp):

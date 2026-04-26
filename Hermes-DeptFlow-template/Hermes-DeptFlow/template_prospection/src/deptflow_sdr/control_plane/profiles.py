@@ -47,7 +47,7 @@ class ProfileFactory:
         return {
             name
             for name in names
-            if name in {"data", "reports", "logs", "__pycache__"}
+            if name in {"data", "reports", "logs", "control_plane", ".deptflow-control-plane", "__pycache__"}
             or name.endswith(".pyc")
             or name == ".env"
         }
