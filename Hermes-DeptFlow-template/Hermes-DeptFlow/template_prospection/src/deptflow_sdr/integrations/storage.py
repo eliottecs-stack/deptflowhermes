@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import urllib.error
+import urllib.parse
 import urllib.request
 from dataclasses import asdict
 from pathlib import Path
@@ -84,8 +85,16 @@ class SupabaseStore:
             response.read()
 
     def existing_lead_keys(self) -> list[str]:
-        # Keep it simple and avoid pulling the entire table in MVP.
-        return []
+        url = f"{self.base}/rest/v1/deptflow_leads?select=lead_key&limit=10000"
+        request = urllib.request.Request(url=url, method="GET", headers=self._headers())
+        with urllib.request.urlopen(request, timeout=30) as response:
+            rows = json.loads(response.read().decode("utf-8") or "[]")
+        keys: list[str] = []
+        for row in rows:
+            key = row.get("lead_key") if isinstance(row, dict) else None
+            if key:
+                keys.append(str(key).strip().lower().rstrip("/"))
+        return keys
 
     def save_lead(self, lead: Lead, score: LeadScore, message: Optional[PreparedMessage] = None) -> None:
         self._post(

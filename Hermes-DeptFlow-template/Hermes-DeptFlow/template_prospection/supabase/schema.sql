@@ -4,6 +4,8 @@
 
 create table if not exists public.deptflow_leads (
   id uuid primary key default gen_random_uuid(),
+  client_id text,
+  profile_id text,
   lead_key text unique not null,
   linkedin_url text,
   full_name text,
@@ -23,9 +25,13 @@ create table if not exists public.deptflow_leads (
 create index if not exists deptflow_leads_score_idx on public.deptflow_leads(score_total desc);
 create index if not exists deptflow_leads_tier_idx on public.deptflow_leads(tier);
 create index if not exists deptflow_leads_qualified_idx on public.deptflow_leads(qualified);
+create index if not exists deptflow_leads_client_profile_idx on public.deptflow_leads(client_id, profile_id);
 
 create table if not exists public.deptflow_runs (
   id uuid primary key default gen_random_uuid(),
+  client_id text,
+  profile_id text,
+  release_id text,
   started_at timestamptz,
   finished_at timestamptz,
   dry_run boolean,

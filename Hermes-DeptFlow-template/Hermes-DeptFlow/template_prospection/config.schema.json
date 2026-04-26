@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DeptFlow profile runtime config",
+  "type": "object",
+  "required": ["profile", "runtime", "limits"],
+  "properties": {
+    "profile": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["default_script", "dry_run_default"],
+      "properties": {
+        "default_script": { "type": "string" },
+        "dry_run_default": { "type": "boolean" }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "daily_search_limit": { "type": "integer", "minimum": 0 },
+        "daily_profile_enrichment_limit": { "type": "integer", "minimum": 0 },
+        "daily_connection_request_limit": { "type": "integer", "minimum": 0, "maximum": 25 }
+      }
+    }
+  }
+}

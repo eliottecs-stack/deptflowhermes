@@ -1,0 +1,8 @@
+.worktrees/
+**/__pycache__/
+**/*.pyc
+Hermes-DeptFlow-template/Hermes-DeptFlow/template_prospection/data/
+Hermes-DeptFlow-template/Hermes-DeptFlow/template_prospection/reports/
+Hermes-DeptFlow-template/Hermes-DeptFlow/template_prospection/logs/
+Hermes-DeptFlow-template/Hermes-DeptFlow/template_prospection/control_plane/
+Hermes-DeptFlow-template/Hermes-DeptFlow/template_prospection/.env

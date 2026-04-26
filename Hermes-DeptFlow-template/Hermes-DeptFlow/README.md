@@ -1,29 +1,33 @@
-# Hermes DeptFlow — SDR IA autonome LinkedIn
+# Hermes DeptFlow - SDR IA autonome supervise
 
-Ce dépôt contient le **template de profil Hermes DeptFlow** pour déployer un SDR IA autonome orienté prospection LinkedIn gratuite.
+Ce dossier contient une V1 de **control plane local Hermes DeptFlow** : un dashboard Python local pour creer et piloter des profils clients Hermes de prospection LinkedIn via BeReach.
 
-Objectif produit : permettre à Hermes de cloner ce repo comme base de profil client, puis de lancer une prospection quotidienne fiable, traçable et contrôlée.
+Objectif produit : un createur non technique installe le repo GitHub, ouvre un dashboard local, configure un client, lance un dry-run, valide un echantillon, puis active une prospection moderee avec suivi Google Sheets.
 
 ## Positionnement
 
-DeptFlow n'est pas un simple bot LinkedIn. C'est un **département SDR IA supervisé** :
+DeptFlow n'est pas un simple bot LinkedIn. C'est un **departement SDR IA supervise** :
 
 1. il lit l'ICP et l'offre du client ;
-2. il génère des requêtes de prospection LinkedIn ;
+2. il genere ou lit des requetes de prospection LinkedIn ;
 3. il recherche des personnes via BeReach ;
 4. il enrichit avec les posts publics disponibles ;
 5. il score les leads ;
 6. il rejette les mauvais profils ;
-7. il prépare des messages sans hallucination ;
-8. il sauvegarde les résultats ;
-9. il produit un rapport quotidien.
+7. il prepare des messages sans hallucination ;
+8. il sauvegarde les resultats ;
+9. il synchronise un suivi CRM Google Sheets ou CSV ;
+10. il bloque les actions reelles tant que le gate go-live n'est pas valide.
 
-## Contraintes assumées
+## Lancement dashboard
 
-- **Pas de Sales Navigator par défaut** : le moteur utilise les endpoints LinkedIn classiques BeReach.
-- **Dry-run par défaut** : aucune action LinkedIn réelle n'est exécutée tant que `DRY_RUN=false` n'est pas configuré explicitement.
-- **Messages non envoyés automatiquement** : le MVP prépare les messages et les soumet au contrôle humain.
-- **Aucun secret dans le repo** : copier `.env.template` vers `.env` puis remplir les clés.
+```bash
+git clone https://github.com/eliottecs-stack/deptflowhermes.git
+cd deptflowhermes/Hermes-DeptFlow-template/Hermes-DeptFlow/template_prospection
+python3 scripts/start_dashboard.py
+```
+
+Ouvrir `http://127.0.0.1:8765`.
 
 ## Structure
 
@@ -31,14 +35,12 @@ DeptFlow n'est pas un simple bot LinkedIn. C'est un **département SDR IA superv
 Hermes-DeptFlow/
 ├── README.md
 ├── QUICKSTART.md
-├── product_review.md
 ├── architecture/
-│   ├── 01_system_architecture.md
-│   ├── 02_bereach_contract.md
-│   ├── 03_quality_and_safety.md
-│   └── 04_release_checklist.md
 └── template_prospection/
     ├── .env.template
+    ├── profile.manifest.json
+    ├── config.schema.json
+    ├── secrets.schema.json
     ├── config.yaml
     ├── SOUL.md
     ├── icp_config.yaml
@@ -50,74 +52,31 @@ Hermes-DeptFlow/
     └── tests/
 ```
 
-## Installation comme profil Hermes
+## Control plane local
 
-Depuis la machine où Hermes tourne :
+La V1 ajoute :
 
-```bash
-git clone https://github.com/eliottecs-stack/deptflowhermes.git
-mkdir -p ~/.hermes/profiles
-cp -r deptflowhermes/Hermes-DeptFlow/template_prospection ~/.hermes/profiles/client-acme
-cd ~/.hermes/profiles/client-acme
-cp .env.template .env
-```
+- registry SQLite locale : clients, profils, releases, runs, leads, quotas, CRM syncs ;
+- vault local chiffre pour secrets client ;
+- generation de profils Hermes isoles depuis un formulaire ;
+- dashboard local avec onboarding et bouton dry-run ;
+- gate go-live : dry-run valide, 10 validations, quotas configures ;
+- contrat BeReach mis a jour : `POST /search/linkedin/people`, `POST /connect/linkedin/profile`, `GET /me/limits` ;
+- sync CRM Google Sheets/CSV via lignes standardisees.
 
-Modifier ensuite :
+## Garde-fous
 
-- `.env`
-- `icp_config.yaml`
-- `campaign_config.yaml`
-- `SOUL.md`
+- Dry-run par defaut.
+- Pas de Sales Navigator par defaut.
+- Demande de connexion sans note en V1.
+- Aucun DM envoye automatiquement.
+- Stop-run sur limites BeReach a cabler cote operateur.
+- Aucun secret ne doit etre commite ni affiche dans les logs.
 
-Puis tester :
+## Tests
 
-```bash
-python3 scripts/validate_config.py
-python3 scripts/dry_run.py --limit 5
-```
-
-Exécution réelle, après validation :
+Depuis `template_prospection` :
 
 ```bash
-DRY_RUN=false python3 scripts/daily_prospecting.py --limit 25
+python3 -m unittest discover -s tests -v
 ```
-
-## Résultat attendu
-
-Le run produit :
-
-- des leads scorés ;
-- un fichier local `data/leads.jsonl` si Supabase n'est pas configuré ;
-- une sauvegarde Supabase si `SUPABASE_URL` et `SUPABASE_SERVICE_KEY` sont renseignés ;
-- des messages préparés, non envoyés automatiquement ;
-- un rapport Markdown dans `reports/`.
-
-## Endpoints BeReach utilisés
-
-Le moteur par défaut s'appuie uniquement sur les endpoints classiques :
-
-- `POST /search/linkedin`
-- `GET /search/linkedin/parameters`
-- `POST /collect/linkedin/posts`
-- `POST /collect/linkedin/comments`
-- `POST /collect/linkedin/comments/replies`
-- `POST /collect/linkedin/likes`
-- `POST /follow/linkedin/profile`
-- `POST /unfollow/linkedin/profile`
-- `GET /contacts/by-url`
-- `PATCH /contacts/bulk`
-
-Les endpoints `/search/linkedin/sales-nav*` sont volontairement exclus du workflow standard, car ils nécessitent Sales Navigator.
-
-## Principes qualité
-
-- Un lead non justifié n'est pas contacté.
-- Une personnalisation non prouvée est interdite.
-- Un lead en dessous du seuil est rejeté.
-- Les messages sont préparés, pas envoyés automatiquement.
-- Les quotas et `retryAfter` BeReach sont respectés.
-- Le mode réel doit toujours passer par un dry-run validé.
-
-## Licence interne
-
-Template produit DeptFlow.

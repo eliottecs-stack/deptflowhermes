@@ -13,8 +13,10 @@ limits:
   daily_search_limit: 100
   daily_profile_enrichment_limit: 50
   daily_follow_limit: 0
+  daily_connection_request_limit: 20
   daily_message_limit: 0
 
 plugins:
   bereach: true
   supabase: optional
+  google_sheets: optional

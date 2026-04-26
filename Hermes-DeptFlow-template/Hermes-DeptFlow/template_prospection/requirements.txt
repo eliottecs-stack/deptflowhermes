@@ -1,3 +1,4 @@
 # Runtime intentionally uses only Python standard library.
 # Optional:
 # pyyaml>=6.0  # only needed if you convert JSON-compatible config files to full YAML syntax
+# google-auth>=2.0  # only needed for direct Google Sheets service-account sync

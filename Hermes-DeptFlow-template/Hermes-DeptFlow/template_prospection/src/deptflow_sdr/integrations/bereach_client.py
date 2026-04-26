@@ -124,13 +124,12 @@ class BeReachClient:
 
     def search_people(self, keywords: str, count: int = 10, start: int = 0, **filters: Any) -> Dict[str, Any]:
         payload: Dict[str, Any] = {
-            "category": "people",
             "keywords": keywords,
             "count": max(1, min(int(count), 25)),
             "start": max(0, int(start)),
         }
         payload.update({k: v for k, v in filters.items() if v not in (None, "", [], {})})
-        return self._request("POST", "/search/linkedin", payload=payload)
+        return self._request("POST", "/search/linkedin/people", payload=payload)
 
     def search_posts(self, keywords: str, count: int = 10, start: int = 0, **filters: Any) -> Dict[str, Any]:
         payload: Dict[str, Any] = {
@@ -166,8 +165,17 @@ class BeReachClient:
     def follow_profile(self, profile: str) -> Dict[str, Any]:
         return self._request("POST", "/follow/linkedin/profile", payload={"profile": profile})
 
+    def connect_profile(self, profile: str, note: str | None = None) -> Dict[str, Any]:
+        payload = {"profile": profile}
+        if note:
+            payload["note"] = note
+        return self._request("POST", "/connect/linkedin/profile", payload=payload)
+
     def unfollow_profile(self, profile: str) -> Dict[str, Any]:
         return self._request("POST", "/unfollow/linkedin/profile", payload={"profile": profile})
+
+    def get_limits(self) -> Dict[str, Any]:
+        return self._request("GET", "/me/limits")
 
     def get_contact_by_url(self, linkedin_url: str) -> Dict[str, Any]:
         return self._request("GET", "/contacts/by-url", params={"linkedinUrl": linkedin_url})

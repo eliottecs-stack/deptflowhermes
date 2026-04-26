@@ -1,65 +1,61 @@
-# Quickstart — profil Hermes DeptFlow
+# Quickstart - Hermes DeptFlow Local Control Plane
 
-## 1. Créer un profil client
+## 1. Installer le repo dans Hermes
 
 ```bash
-mkdir -p ~/.hermes/profiles
-cp -r template_prospection ~/.hermes/profiles/client-demo
-cd ~/.hermes/profiles/client-demo
-cp .env.template .env
+git clone https://github.com/eliottecs-stack/deptflowhermes.git
+cd deptflowhermes/Hermes-DeptFlow-template/Hermes-DeptFlow/template_prospection
+python3 scripts/start_dashboard.py
 ```
 
-## 2. Configurer les secrets
+Ouvrir ensuite `http://127.0.0.1:8765`.
 
-Dans `.env` :
+## 2. Creer un client sans terminal
+
+Depuis le dashboard :
+
+1. cliquer sur `Creer un client` ;
+2. renseigner client, offre, ICP, exclusions et quota de connexions ;
+3. generer le profil Hermes client ;
+4. lancer un dry-run depuis la liste des profils.
+
+Le dashboard cree un profil client sous `control_plane/profiles/<client-slug>/`.
+
+## 3. Secrets et APIs
+
+Le fichier `.env.template` documente les secrets attendus. En V1, le dashboard expose le contrat local; les secrets reels doivent etre stockes via le vault local chiffre ou injectes dans `.env` pour les tests CLI.
+
+Secrets principaux :
 
 ```env
 BEREACH_API_KEY=...
-SUPABASE_URL=...
-SUPABASE_SERVICE_KEY=...
+OPENAI_API_KEY=...
+GOOGLE_SERVICE_ACCOUNT_JSON=...
+GOOGLE_SHEET_ID=...
 DRY_RUN=true
 ```
 
-Le système fonctionne aussi sans Supabase : il écrira dans `data/*.jsonl`.
+## 4. Mode dry-run
 
-## 3. Configurer l'ICP
-
-Modifier `icp_config.yaml`.
-
-Le fichier est volontairement au format JSON-compatible YAML pour éviter toute dépendance Python externe. Il reste lisible par les loaders YAML standards.
-
-## 4. Valider
-
-```bash
-python3 scripts/validate_config.py
-```
-
-## 5. Lancer un dry-run
+Le dry-run utilise les fixtures locales par defaut et ne consomme aucun credit BeReach :
 
 ```bash
 python3 scripts/dry_run.py --limit 5
 ```
 
-Le dry-run utilise des fixtures locales et ne consomme aucun crédit BeReach.
+## 5. Gate go-live
 
-## 6. Lancer avec BeReach, sans action LinkedIn
+L'auto-connexion reste bloquee tant que ces conditions ne sont pas remplies :
+
+- un dry-run termine avec succes ;
+- au moins 10 leads/messages approuves ;
+- un quota quotidien de connexion configure ;
+- les limites BeReach disponibles via `GET /me/limits`.
+
+La V1 envoie des demandes de connexion sans note et prepare les brouillons DM pour suivi CRM.
+
+## 6. Tests
 
 ```bash
-DRY_RUN=true USE_BEREACH_IN_DRY_RUN=true python3 scripts/daily_prospecting.py --limit 10
-```
-
-Cela appelle BeReach pour rechercher/enrichir, mais ne fait pas d'action LinkedIn.
-
-## 7. Lancer en réel
-
-```bash
-DRY_RUN=false python3 scripts/daily_prospecting.py --limit 25
-```
-
-Par défaut, même en réel, le système ne fait que rechercher, scorer, sauvegarder et préparer les messages. Les actions LinkedIn sensibles restent désactivées tant qu'elles ne sont pas explicitement activées dans `campaign_config.yaml`.
-
-## 8. Cron recommandé
-
-```cron
-0 8 * * 1-5 cd ~/.hermes/profiles/client-demo && /usr/bin/python3 scripts/daily_prospecting.py --limit 25 >> logs/cron.log 2>&1
+python3 -m unittest discover -s tests -v
 ```
